@@ -7,7 +7,7 @@ from pathlib import Path
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from moviepy.editor import VideoFileClip
 from utils.console import print_step, print_substep
-
+from moviepy.video.io.VideoFileClip import VideoFileClip
 import datetime
 
 
@@ -64,12 +64,11 @@ def chop_background_video(video_length, vidpath):
         noerror = False
         return noerror
     start_time, end_time = get_start_and_end_times(video_length, background.duration)
-    ffmpeg_extract_subclip(
-        f"assets/mp4/{vidpath}.mp4",
-        start_time,
-        end_time,
-        targetname="assets/mp4/clip.mp4",
-    )
+
+    with VideoFileClip("assets/mp4/background.mp4") as video:
+        new = video.subclip(start_time, end_time)
+        new.write_videofile("assets/mp4/clip.mp4")
+        
     print_substep("Background video chopped successfully!", style="bold green")
     noerror = True
     return noerror
